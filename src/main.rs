@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+mod ofx;
 
 #[derive(Parser, Debug)]
 #[clap(author = "Author Name", version, about)]
@@ -26,6 +27,8 @@ enum SubCommand {
 fn main() {
     let args = Arguments::parse();
     match args.cmd {
-        SubCommand::Import { file_path } => println!("Import {}", file_path),
+        SubCommand::Import { file_path } => {
+            ofx::Load(&file_path).unwrap();
+        }
     }
 }
