@@ -1,5 +1,5 @@
 table! {
-   accounts (id) {
+    accounts (id) {
         id -> Integer,
         account_name -> Text,
         account_balance -> Integer,

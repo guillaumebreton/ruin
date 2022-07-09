@@ -42,7 +42,14 @@ pub fn upsert_account(
     let r = find_by_number(conn, acc_number);
 
     match r {
-        Ok(account) => Ok(account),
+        Ok(account) => {
+            println!("Updating account {} balance to {}", acc_number, acc_balance);
+            diesel::update(accounts.filter(account_number.eq(acc_number)))
+                .set(account_balance.eq(acc_balance))
+                .execute(conn)
+                .unwrap();
+            Ok(account)
+        }
         Err(diesel::NotFound) => {
             println!("Creating a new account {}", acc_number);
             let new_account = NewAccount {

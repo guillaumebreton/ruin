@@ -50,12 +50,20 @@ fn main() {
         SubCommand::Import { file_path } => {
             let data = ofx::load(&file_path).unwrap();
             let account = data.message.response.aggregate.account;
+            let balance = data
+                .message
+                .response
+                .aggregate
+                .available_balance
+                .amount
+                .parse::<f32>()
+                .unwrap();
             model::upsert_account(
                 &connection,
                 "",
                 &account.account_type,
                 &account.account_number,
-                0,
+                (balance * 100.0) as i32,
             )
             .unwrap();
         }
