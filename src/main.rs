@@ -3,6 +3,7 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
+use chrono::NaiveDate;
 use clap::{Parser, Subcommand};
 use diesel::prelude::*;
 
@@ -49,7 +50,7 @@ fn main() {
     match args.cmd {
         SubCommand::Import { file_path } => {
             let data = ofx::load(&file_path).unwrap();
-            let account = data.message.response.aggregate.account;
+            let account_data = data.message.response.aggregate.account;
             let balance = data
                 .message
                 .response
@@ -58,14 +59,35 @@ fn main() {
                 .amount
                 .parse::<f32>()
                 .unwrap();
-            model::upsert_account(
+            let account = model::upsert_account(
                 &connection,
                 "",
-                &account.account_type,
-                &account.account_number,
+                &account_data.account_type,
+                &account_data.account_number,
                 (balance * 100.0) as i32,
             )
             .unwrap();
+
+            for tx in data
+                .message
+                .response
+                .aggregate
+                .transaction_list
+                .transactions
+            {
+                let date_posted = NaiveDate::parse_from_str(&tx.date_posted, "%Y%m%d").unwrap();
+                // TODO change the parse to use international format.
+                let amount = tx.amount.replace(",", ".").parse::<f32>().unwrap();
+                model::upsert_transaction(
+                    &connection,
+                    &tx.description,
+                    date_posted,
+                    &tx.id,
+                    (amount * 100.0) as i32,
+                    account.id,
+                )
+                .unwrap();
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
--- Your SQL goes here
 create table accounts (
     id integer PRIMARY KEY AUTOINCREMENT not null,
     account_name varchar not null,
