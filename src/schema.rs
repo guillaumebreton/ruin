@@ -1,7 +1,9 @@
 table! {
-    accounts (id) {
-        id -> Nullable<Integer>,
-        name -> Text,
-        balance -> Nullable<Float>,
+   accounts (id) {
+        id -> Integer,
+        account_name -> Text,
+        account_balance -> Integer,
+        account_number -> Text,
+        account_type -> Text,
     }
 }
