@@ -9,8 +9,8 @@ pub struct Account {
     pub id: i32,
     pub account_name: String,
     pub account_balance: i32,
-    pub account_type: String,
     pub account_number: String,
+    pub account_type: String,
 }
 
 #[derive(Insertable)]
@@ -18,8 +18,8 @@ pub struct Account {
 pub struct NewAccount<'a> {
     pub account_name: &'a str,
     pub account_balance: i32,
-    pub account_type: &'a str,
     pub account_number: &'a str,
+    pub account_type: &'a str,
 }
 
 #[derive(Queryable)]
