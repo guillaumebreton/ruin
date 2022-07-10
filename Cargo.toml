@@ -12,6 +12,8 @@ diesel = { version = "1.4.8", features = ["sqlite", "chrono"] }
 serde-xml-rs = "0.5.1"
 diesel_migrations =  "1.4.0"
 chrono = "0.4.19"
+tui = "0.18"
+crossterm = "0.23"
 
 [target.aarch64-apple-darwin]
 rustflags = [
