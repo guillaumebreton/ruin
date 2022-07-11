@@ -31,6 +31,7 @@ pub struct Transaction {
     pub transaction_id: String,
     pub transaction_amount: i32,
     pub account_id: i32,
+    pub category_id: Option<i32>,
 }
 
 #[derive(Insertable, AsChangeset)]
@@ -41,6 +42,15 @@ pub struct NewTransaction<'a> {
     pub transaction_id: &'a str,
     pub transaction_amount: i32,
     pub account_id: i32,
+}
+#[derive(Queryable)]
+pub struct Category {
+    pub id: i32,
+    pub name: String,
+}
+
+pub struct NewCategory<'a> {
+    pub name: &'a str,
 }
 
 pub struct Service<'a> {
@@ -144,15 +154,17 @@ impl Service<'_> {
     pub fn list_transactions(
         &self,
         duration: Duration,
-    ) -> Result<Vec<(Transaction, Account)>, diesel::result::Error> {
+    ) -> Result<Vec<(Transaction, Account, Option<Category>)>, diesel::result::Error> {
         use crate::schema::accounts::dsl::*;
+        use crate::schema::categories::dsl::*;
         use crate::schema::transactions::dsl::*;
 
         let txs = transactions
             .order(date_posted)
             .filter(date_posted.ge(Utc::today().naive_utc() - duration))
             .inner_join(accounts)
-            .load::<(Transaction, Account)>(self.connection)
+            .left_outer_join(categories)
+            .load::<(Transaction, Account, Option<Category>)>(self.connection)
             .unwrap();
         Ok(txs)
     }

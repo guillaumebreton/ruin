@@ -1,4 +1,4 @@
-use crate::model::{Account, Service, Transaction};
+use crate::model::{Account, Category, Service, Transaction};
 use chrono::Duration;
 use crossterm::event::{self, Event, KeyCode};
 use std::io;
@@ -11,7 +11,7 @@ use tui::{
 };
 struct State {
     state: TableState,
-    items: Vec<(Transaction, Account)>,
+    items: Vec<(Transaction, Account, Option<Category>)>,
 }
 
 impl State {
@@ -72,7 +72,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
 
     let selected_style = Style::default().add_modifier(Modifier::REVERSED);
     let normal_style = Style::default().bg(Color::Blue);
-    let header_cells = ["ID", "Date", "Account", "Amount", "Description"]
+    let header_cells = ["ID", "Date", "Account", "Amount", "Category", "Description"]
         .iter()
         .map(|h| Cell::from(*h).style(Style::default().fg(Color::Red)));
     let header = Row::new(header_cells)
@@ -80,11 +80,13 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
         .height(1)
         .bottom_margin(1);
     let rows = state.items.iter().map(|item| {
+        let category_name = item.2.as_ref().map_or("".to_string(), |v| v.name.clone());
         let cells = vec![
             item.0.id.to_string(),
             item.0.date_posted.to_string(),
             item.1.account_number.clone(),
             ((item.0.transaction_amount as f64) / 100.0).to_string(),
+            category_name,
             item.0.description.clone(),
         ];
         Row::new(cells).bottom_margin(0)
@@ -96,6 +98,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
         .widths(&[
             Constraint::Length(2),
             Constraint::Length(12),
+            Constraint::Min(20),
             Constraint::Min(20),
             Constraint::Min(20),
             Constraint::Percentage(100),

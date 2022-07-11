@@ -8,18 +8,13 @@ use clap::{Parser, Subcommand};
 use diesel::prelude::*;
 
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{DisableMouseCapture, EnableMouseCapture},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use std::io;
 use std::io::Error;
-use std::{io, thread, time::Duration};
-use tui::{
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    widgets::{Block, Borders, Widget},
-    Terminal,
-};
+use tui::{backend::CrosstermBackend, Terminal};
 
 use model::Service;
 
@@ -31,11 +26,6 @@ pub mod ui;
 #[derive(Parser, Debug)]
 #[clap(author = "Author Name", version, about)]
 struct Arguments {
-    // #[clap(default_value_t=usize::MAX,short, long)]
-    // /// maximum depth to which sub-directories should be explored
-    // max_depth: usize,
-    // #[clap(short, long, parse(from_occurrences))]
-    // verbosity: usize,
     #[clap(short, long, default_value_t = String::from("ruin.db"),forbid_empty_values = true)]
     /// the file to explore
     db_path: String,
