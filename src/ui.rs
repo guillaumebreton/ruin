@@ -79,7 +79,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
 
     let selected_style = Style::default().add_modifier(Modifier::REVERSED);
     let normal_style = Style::default().bg(Color::Blue);
-    let header_cells = ["ID", "Date", "Account", "Description", "Amount"]
+    let header_cells = ["ID", "Date", "Account", "Amount", "Description"]
         .iter()
         .map(|h| Cell::from(*h).style(Style::default().fg(Color::Red)));
     let header = Row::new(header_cells)
@@ -91,8 +91,8 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
             item.0.id.to_string(),
             item.0.date_posted.to_string(),
             item.1.account_number.clone(),
-            item.0.description.clone(),
             ((item.0.transaction_amount as f64) / 100.0).to_string(),
+            item.0.description.clone(),
         ];
         Row::new(cells).bottom_margin(0)
     });
@@ -103,9 +103,9 @@ fn ui<B: Backend>(f: &mut Frame<B>, state: &mut State) {
         .widths(&[
             Constraint::Length(2),
             Constraint::Length(12),
-            Constraint::Min(50),
-            Constraint::Min(300),
-            Constraint::Length(30),
+            Constraint::Min(20),
+            Constraint::Min(20),
+            Constraint::Percentage(100),
         ]);
     f.render_stateful_widget(t, rects[0], &mut state.state);
 }
