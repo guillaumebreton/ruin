@@ -160,10 +160,10 @@ impl Service<'_> {
         use crate::schema::transactions::dsl::*;
 
         let txs = transactions
-            .order(date_posted)
             .filter(date_posted.ge(Utc::today().naive_utc() - duration))
             .inner_join(accounts)
             .left_outer_join(categories)
+            .order(date_posted.desc())
             .load::<(Transaction, Account, Option<Category>)>(self.connection)
             .unwrap();
         Ok(txs)
