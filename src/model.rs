@@ -1,6 +1,7 @@
 use crate::schema::accounts;
 use crate::schema::transactions;
 use chrono::prelude::*;
+use chrono::{Duration, Utc};
 use diesel::prelude::*; // important otherwise the filter function won't work
 use diesel::{Queryable, SqliteConnection};
 
@@ -140,11 +141,16 @@ impl Service<'_> {
         }
     }
 
-    pub fn list_transactions(&self) -> Result<Vec<(Transaction, Account)>, diesel::result::Error> {
+    pub fn list_transactions(
+        &self,
+        duration: Duration,
+    ) -> Result<Vec<(Transaction, Account)>, diesel::result::Error> {
         use crate::schema::accounts::dsl::*;
         use crate::schema::transactions::dsl::*;
+
         let txs = transactions
             .order(date_posted)
+            .filter(date_posted.ge(Utc::today().naive_utc() - duration))
             .inner_join(accounts)
             .load::<(Transaction, Account)>(self.connection)
             .unwrap();

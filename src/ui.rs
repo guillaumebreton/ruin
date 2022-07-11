@@ -1,16 +1,9 @@
 use crate::model::{Account, Service, Transaction};
-use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
-use std::{
-    error::Error,
-    io,
-    time::{Duration, Instant},
-};
+use chrono::Duration;
+use crossterm::event::{self, Event, KeyCode};
+use std::io;
 use tui::{
-    backend::{Backend, CrosstermBackend},
+    backend::Backend,
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, Cell, Row, Table, TableState},
@@ -52,7 +45,7 @@ impl State {
 }
 
 pub fn run_app<B: Backend>(terminal: &mut Terminal<B>, service: Service) -> io::Result<()> {
-    let transactions = service.list_transactions().unwrap();
+    let transactions = service.list_transactions(Duration::weeks(52)).unwrap();
 
     let mut state = State {
         state: TableState::default(),
